@@ -30,7 +30,8 @@ $apps = @(
 	"winscp",
 	"sysinternals",
 	"slack",
-	"icloud"
+	"icloud",
+	"nvm"
 	)
 $manualApps = @( 
 	"RGB Fusion",
