@@ -15,7 +15,6 @@ $apps = @(
 	"vscode",
 	"battle.net",
 	"steam",
-	"1password",
 	"twitch",
 	"leagueoflegends",
 	"origin",
@@ -34,6 +33,7 @@ $apps = @(
 	"nvm"
 	)
 $manualApps = @( 
+	"1password",
 	"blitz",
 	"TeamSpeak 5",
 	"GoXLR",
