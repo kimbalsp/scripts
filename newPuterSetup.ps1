@@ -34,8 +34,6 @@ $apps = @(
 	"nvm"
 	)
 $manualApps = @( 
-	"RGB Fusion",
-	"SIV",
 	"blitz",
 	"TeamSpeak 5",
 	"GoXLR",
@@ -51,7 +49,7 @@ write-host "The following apps were installed:" + $apps
 write-host "Install the remaining manually:" + $manualApps
 
 foreach( $j in $junctions){
-	junction C:\Users\spencer\$j\$j D:\Users\spencer\$j
+	junction C:\Users\spencer\$j\$j U:\Users\spencer\$j
 }
 
 write-host "Junction Points Created for: " + $junctions
