@@ -29,8 +29,8 @@ git config --global core.editor code
 echo "git config --global core.editor code"
 
 ## Clone Repos from Github
-mkdir code
-mkdir code/github
+mkdir ~/code
+mkdir ~/code/github
 cd code/github
 for repoName in $(gh repo list)
 do
