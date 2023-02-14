@@ -66,10 +66,9 @@ function New-Puter {
 	if(!$noUserFolder){
 		foreach( $junction in $junctions.GetEnumerator()){
 			Set-ItemProperty -Path $regPath -Name $($junction.Name) -Value D:\Users\spencer\$($junction.Value)
+			write-host "Remapped folder for: " $($junction.Value)
 		}
 	}
-
-	write-host "Junction Points Created for: " + $junctions
 
 	## Git Config
 	git config --global user.name "kimbalsp"
