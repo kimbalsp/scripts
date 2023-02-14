@@ -78,6 +78,12 @@ function New-Puter {
 	git config --global core.editor code
 	write-host "git config --global core.editor code"
 
+	New-Item -ItemType Directory -Path c:\code
+	New-Item -ItemType Directory -Path c:\code\github
+	Set-Location c:\code\github
+	$repoList = gh repo list
+	foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
+
 	## Powershell Config
 	[string]$powershellConfig = "Import-Module C:\code\github\League\New-ARAM.ps1
 	Set-Location c:\code
