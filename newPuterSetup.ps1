@@ -44,6 +44,7 @@ function New-Puter {
 		"VB-Audio.Voicemeeter.Banana",
 		"GitHub.cli",
 		"hwmonitor",
+		"Microsoft.WindowsTerminal",
 		"SlackTechnologies.Slack"
 		)
 
