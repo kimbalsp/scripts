@@ -1,3 +1,31 @@
+<#
+.SYNOPSIS
+Configure computer with Applications, Folder locations, Git configuration, and Powershell
+
+.DESCRIPTION
+Install applications using winget and install chocolatey
+Set User Folders to D:/
+Configure Git and download repos for kimbalsp
+Configure Powershell profile
+
+.PARAMETER NoInstallApps
+Switch to skip Application Installation
+
+.PARAMETER NoSetFolderLocations
+Switch to skip User Folder mappings
+
+.PARAMETER NoSetGitConfig
+Switch to skip Git configuration and repo downloading
+
+.PARAMETER NoSetPowershellUser
+Switch to skip Powershell profile configuration
+
+.EXAMPLE
+New-Puter -NoInstallApps -NoSetFolderLocations -NoSetGitConfig -NoSetPowershellUser
+
+.NOTES
+
+#>
 function New-Puter {
     param (
         [switch]$NoInstallApps,
