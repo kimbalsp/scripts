@@ -1,6 +1,37 @@
+<#
+.SYNOPSIS
+Configure computer with Applications, Folder locations, Git configuration, and Powershell
+
+.DESCRIPTION
+Install applications using winget and install chocolatey
+Set User Folders to D:/
+Configure Git and download repos for kimbalsp
+Configure Powershell profile
+
+.PARAMETER NoInstallApps
+Switch to skip Application Installation
+
+.PARAMETER NoSetFolderLocations
+Switch to skip User Folder mappings
+
+.PARAMETER NoSetGitConfig
+Switch to skip Git configuration and repo downloading
+
+.PARAMETER NoSetPowershellUser
+Switch to skip Powershell profile configuration
+
+.EXAMPLE
+New-Puter -NoInstallApps -NoSetFolderLocations -NoSetGitConfig -NoSetPowershellUser
+
+.NOTES
+
+#>
 function New-Puter {
     param (
-        [switch]$noUserFolder
+        [switch]$NoInstallApps,
+        [switch]$NoSetFolderLocations,
+        [switch]$NoSetGitConfig,
+        [switch]$NoSetPowershellUser
     )
 
 	$regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
@@ -53,42 +84,66 @@ function New-Puter {
 		"GoXLR"
 		)
 
-	# Install Chocolatey
-	Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
 	# Install Applications
-	foreach( $app in $apps){
-		winget install $app --accept-package-agreements
+	function Install-Apps {
+		# Install Chocolatey
+		Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+		
+		foreach( $app in $apps){
+			winget install $app --accept-package-agreements
+		}
+		write-host "The following apps were installed:" + $apps
+		write-host "Install the remaining manually:" + $manualApps
 	}
-	write-host "The following apps were installed:" + $apps
-	write-host "Install the remaining manually:" + $manualApps
 
 	# Set User Shell Folder Locations
-	if(!$noUserFolder){
+	function Set-FolderLocations {
 		foreach( $junction in $junctions.GetEnumerator()){
 			Set-ItemProperty -Path $regPath -Name $($junction.Name) -Value D:\Users\spencer\$($junction.Value)
 			write-host "Remapped folder for: " $($junction.Value)
 		}
 	}
 
-	## Git Config
-	git config --global user.name "kimbalsp"
-	write-host "git config --global user.name kimbalsp"
-	git config --global user.email skimball07@gmail.com
-	write-host "git config --global user.email skimball07@gmail.com"
-	git config --global core.editor code
-	write-host "git config --global core.editor code"
+	# Git Config
+	function Set-GitConfig {
+		git config --global user.name "kimbalsp"
+		write-host "git config --global user.name kimbalsp"
+		git config --global user.email skimball07@gmail.com
+		write-host "git config --global user.email skimball07@gmail.com"
+		git config --global core.editor code
+		write-host "git config --global core.editor code"
+		
+		# Clone Repos
+		New-Item -ItemType Directory -Path c:\code
+		New-Item -ItemType Directory -Path c:\code\github
+		Set-Location c:\code\github
+		$repoList = gh repo list
+		foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
+	}
 
-	New-Item -ItemType Directory -Path c:\code
-	New-Item -ItemType Directory -Path c:\code\github
-	Set-Location c:\code\github
-	$repoList = gh repo list
-	foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
+	# Powershell Config
+	function Set-PowershellUser {
+		[string]$powershellConfig = "Import-Module C:\code\github\League\New-ARAM.ps1
+		Set-Location c:\code
+		clear-host"
+		Add-Content $PROFILE -Value $powershellConfig
+		write-host "Powershell Profile Cofigured"
+	}
 
-	## Powershell Config
-	[string]$powershellConfig = "Import-Module C:\code\github\League\New-ARAM.ps1
-	Set-Location c:\code
-	clear-host"
-	Add-Content $PROFILE -Value $powershellConfig
-	write-host "Powershell Profile Cofigured"
+
+	if (!$NoInstallApps) {
+		Install-Apps
+	}
+
+	if (!$NoSetFolderLocations) {
+		Set-FolderLocations
+	}
+
+	if (!$NoSetGitConfig) {
+		Set-GitConfig
+	}
+
+	if (!$NoSetPowershellUser) {
+		Set-PowershellUser
+	}
 }
