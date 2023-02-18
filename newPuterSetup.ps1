@@ -123,9 +123,7 @@ function New-Puter {
 
 	# Powershell Config
 	function Set-PowershellUser {
-		[string]$powershellConfig = "Import-Module C:\code\github\League\New-ARAM.ps1
-		Set-Location c:\code
-		clear-host"
+		$powershellConfig = Get-Content C:\code\github\config\powershell_profile.ps1
 		Add-Content $PROFILE -Value $powershellConfig
 		write-host "Powershell Profile Cofigured"
 	}
