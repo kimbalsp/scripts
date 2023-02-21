@@ -76,7 +76,8 @@ function New-Puter {
 		"GitHub.cli",
 		"hwmonitor",
 		"Microsoft.WindowsTerminal",
-		"SlackTechnologies.Slack"
+		"SlackTechnologies.Slack",
+		"Oracle.JavaRuntimeEnvironment"
 		)
 
 	$manualApps = @( 
