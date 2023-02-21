@@ -31,7 +31,8 @@ function New-Puter {
         [switch]$NoInstallApps,
         [switch]$NoSetFolderLocations,
         [switch]$NoSetGitConfig,
-        [switch]$NoSetPowershellUser
+        [switch]$NoSetPowershellUser,
+		[switch]$NoInstallWSL
     )
 
 	$regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
@@ -129,6 +130,10 @@ function New-Puter {
 		write-host "Powershell Profile Cofigured"
 	}
 
+	function Install-WSL {
+		wsl --install -d Ubuntu-22.04
+	}
+
 
 	if (!$NoInstallApps) {
 		Install-Apps
@@ -144,5 +149,9 @@ function New-Puter {
 
 	if (!$NoSetPowershellUser) {
 		Set-PowershellUser
+	}
+
+	if (!$NoInstallWSL) {
+		Install-WSL
 	}
 }
