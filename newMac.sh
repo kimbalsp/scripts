@@ -16,7 +16,7 @@ apps=(
 ## Install Apps
 for app in $apps
 do
-    brew install $app
+    brew install "$app"
     echo "$app installed"
 done
 
@@ -31,11 +31,11 @@ echo "git config --global core.editor code"
 ## Clone Repos from Github
 mkdir ~/code
 mkdir ~/code/github
-cd code/github
+cd code/github || exit
 for repoName in $(gh repo list)
 do
     if [[ $repoName = "kimbalsp/"* ]]; then
-        gh repo clone $repoName
+        gh repo clone "$repoName"
     fi
 done
 
