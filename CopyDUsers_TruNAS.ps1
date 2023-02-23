@@ -1,1 +1,0 @@
-robocopy D:\Users\ \\10.10.10.50\Backup\Batcave\ /e /b /mt /z
