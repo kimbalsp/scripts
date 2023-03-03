@@ -8,17 +8,23 @@ Set User Folders to D:/
 Configure Git and download repos for kimbalsp
 Configure Powershell profile
 
-.PARAMETER NoInstallApps
-Switch to skip Application Installation
+.PARAMETER InstallApps
+Switch to install apps
 
-.PARAMETER NoSetFolderLocations
-Switch to skip User Folder mappings
+.PARAMETER PostInstallApps
+Switch to run everythings except Install-Apps. Run this after Install-Apps
 
-.PARAMETER NoSetGitConfig
-Switch to skip Git configuration and repo downloading
+.PARAMETER SetFolderLocations
+Switch to set folder locations
 
-.PARAMETER NoSetPowershellUser
-Switch to skip Powershell profile configuration
+.PARAMETER SetGitConfig
+Switch to set git config
+
+.PARAMETER SetPowershellUser
+Switch to Set powershell user
+
+.PARAMETER InstallWSL
+Switch to Install WSL
 
 .EXAMPLE
 New-Puter -NoInstallApps -NoSetFolderLocations -NoSetGitConfig -NoSetPowershellUser
@@ -28,15 +34,25 @@ New-Puter -NoInstallApps -NoSetFolderLocations -NoSetGitConfig -NoSetPowershellU
 #>
 function New-Puter {
     param (
-        [switch]$NoInstallApps,
-        [switch]$NoSetFolderLocations,
-        [switch]$NoSetGitConfig,
-        [switch]$NoSetPowershellUser,
-		[switch]$NoInstallWSL
+        [switch]$InstallApps,
+		[switch]$PostInstallApps,
+        [switch]$SetFolderLocations,
+        [switch]$SetGitConfig,
+        [switch]$SetPowershellUser,
+		[switch]$InstallWSL
     )
 
+	$junctions = @(
+		"Desktop",
+		"Documents",
+		"Downloads",
+		"Music",
+		"Pictures",
+		"Videos"
+	)
+
 	$regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-	$junctions = @{
+	$registrys = @{
 		"Personal" = "Documents"
 		"Documents" = "Documents"
 		"{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "Documents"
@@ -56,29 +72,35 @@ function New-Puter {
 	}
 
 	$apps = @( 
-		"Mozilla.Firefox",
-		"Notepad++.Notepad++",
-		"Microsoft.VisualStudioCode",
-		"Valve.Steam",
-		"RiotGames.LeagueOfLegends.NA",
-		"ElectronicArts.EADesktop",
-		"Ubisoft.Connect",
 		"7zip.7zip",
+		"9P7KNL5RWT25", #SysInternals
+		"AgileBits.1Password",
+		"ElectronicArts.EADesktop",
 		"Discord.Discord",
 		"Git.Git",
 		"Rufus.Rufus",
 		"TeamSpeakSystems.TeamSpeakClient",
-		"WinSCP.WinSCP",
-		"9P7KNL5RWT25",
-		"XP89DCGQ3K6VLD",
-		"AgileBits.1Password",
-		"Nota.Gyazo",
-		"VB-Audio.Voicemeeter.Banana",
 		"GitHub.cli",
+		"REALiX.HWiNFO",
 		"hwmonitor",
+		"JanDeDobbeleer.OhMyPosh",
+		"Microsoft.DotNet.DesktopRuntime.7",
+		"Microsoft.PowerShell",
+		"Microsoft.VisualStudioCode",
 		"Microsoft.WindowsTerminal",
+		"Mozilla.Firefox",
+		"Nota.Gyazo",
+		"Notepad++.Notepad++",
+		"Oracle.JavaRuntimeEnvironment",
+		"RiotGames.LeagueOfLegends.NA",
+		"rocksdanister.LivelyWallpaper",
 		"SlackTechnologies.Slack",
-		"Oracle.JavaRuntimeEnvironment"
+		"TeamSpeakSystems.TeamSpeakClient",
+		"Ubisoft.Connect",
+		"Valve.Steam",
+		"VB-Audio.Voicemeeter.Banana",
+		"WinSCP.WinSCP",
+		"XP89DCGQ3K6VLD" #PowerToys
 		)
 
 	$manualApps = @( 
@@ -92,7 +114,9 @@ function New-Puter {
 		Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 		
 		foreach( $app in $apps){
-			winget install $app --accept-package-agreements
+			if( !(winget list | Select-String -Pattern $app -SimpleMatch)){
+				winget install $app --accept-package-agreements
+			}
 		}
 		write-host "The following apps were installed:" + $apps
 		write-host "Install the remaining manually:" + $manualApps
@@ -100,9 +124,18 @@ function New-Puter {
 
 	# Set User Shell Folder Locations
 	function Set-FolderLocations {
-		foreach( $junction in $junctions.GetEnumerator()){
-			Set-ItemProperty -Path $regPath -Name $($junction.Name) -Value D:\Users\spencer\$($junction.Value)
-			write-host "Remapped folder for: " $($junction.Value)
+		foreach( $registry in $registrys.GetEnumerator()){
+			Set-ItemProperty -Path $regPath -Name $($registry.Name) -Value D:\Users\spencer\$($registry.Value)
+			write-host "Registry edited for: " $($registry.Value)
+		}
+		foreach( $junction in $junctions){
+			if ((Get-Item -Path C:\Users\spencer\${junction} -Force).LinkType -ne "Junction"){
+				Remove-Item -Path C:\Users\spencer\${registry} -Recurse -Force
+				New-Item -ItemType Junction -Target D:\Users\spencer\${junction} -Path C:\Users\spencer\ -Name $junction
+				write-host "Folder Remapped for: ${junction}"
+			} else {
+				write-host "Folder already mapped: ${junction}"
+			}
 		}
 	}
 
@@ -116,8 +149,12 @@ function New-Puter {
 		write-host "git config --global core.editor code"
 		
 		# Clone Repos
-		New-Item -ItemType Directory -Path c:\code
-		New-Item -ItemType Directory -Path c:\code\github
+		if( !(Test-Path -Path C:\code)){
+			New-Item -ItemType Directory -Path c:\code
+		}
+		if( !(Test-Path -Path C:\code\github)){
+			New-Item -ItemType Directory -Path c:\code\github
+		}
 		Set-Location c:\code\github
 		$repoList = gh repo list
 		foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
@@ -134,24 +171,30 @@ function New-Puter {
 		wsl --install -d Ubuntu-22.04
 	}
 
-
-	if (!$NoInstallApps) {
+	if ($InstallApps) {
 		Install-Apps
 	}
 
-	if (!$NoSetFolderLocations) {
+	if ($PostInstallApps) {
+		Set-FolderLocations
+		Set-GitConfig
+		Set-PowershellUser
+		Install-WSL
+	}
+
+	if ($SetFolderLocations){
 		Set-FolderLocations
 	}
 
-	if (!$NoSetGitConfig) {
+	if ($SetGitConfig) {
 		Set-GitConfig
 	}
 
-	if (!$NoSetPowershellUser) {
+	if ($SetPowershellUser) {
 		Set-PowershellUser
 	}
 
-	if (!$NoInstallWSL) {
+	if ($InstallWSL) {
 		Install-WSL
 	}
 }
