@@ -80,6 +80,7 @@ function New-Puter {
 		"Git.Git",
 		"Rufus.Rufus",
 		"TeamSpeakSystems.TeamSpeakClient",
+		"Giorgiotani.Peazip",
 		"GitHub.cli",
 		"REALiX.HWiNFO",
 		"hwmonitor",
@@ -165,6 +166,16 @@ function New-Puter {
 		$powershellConfig = Get-Content C:\code\github\config\powershell_profile.ps1
 		Add-Content $PROFILE -Value $powershellConfig
 		write-host "Powershell Profile Cofigured"
+
+		if ( !(Test-Path -Path C:\Users\spencer\.zshrc)){
+			New-Item -Path C:\Users\spencer -Name .zshrc
+			Add-Content -Path C:\Users\spencer\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
+		}
+
+		if ( !(Test-Path -Path C:\Users\spencer\.bashrc)){
+			New-Item -Path C:\Users\spencer -Name .bashrc
+			Add-Content -Path C:\Users\spencer\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
+		}
 	}
 
 	function Install-WSL {
