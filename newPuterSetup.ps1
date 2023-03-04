@@ -34,6 +34,7 @@ New-Puter -NoInstallApps -NoSetFolderLocations -NoSetGitConfig -NoSetPowershellU
 #>
 function New-Puter {
     param (
+		[Parameter(Mandatory=$true)][string]$Username,
         [switch]$InstallApps,
 		[switch]$PostInstallApps,
         [switch]$SetFolderLocations,
@@ -51,7 +52,11 @@ function New-Puter {
 		"Videos"
 	)
 
+	[string]$CHome = "C:\Users\${Username}"
+	[string]$DHome = "D:\Users\${Username}"
+
 	$regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+
 	$registrys = @{
 		"Personal" = "Documents"
 		"Documents" = "Documents"
@@ -126,13 +131,13 @@ function New-Puter {
 	# Set User Shell Folder Locations
 	function Set-FolderLocations {
 		foreach( $registry in $registrys.GetEnumerator()){
-			Set-ItemProperty -Path $regPath -Name $($registry.Name) -Value D:\Users\spencer\$($registry.Value)
+			Set-ItemProperty -Path $regPath -Name $($registry.Name) -Value ${DHome}\$($registry.Value)
 			write-host "Registry edited for: " $($registry.Value)
 		}
 		foreach( $junction in $junctions){
-			if ((Get-Item -Path C:\Users\spencer\${junction} -Force).LinkType -ne "Junction"){
-				Remove-Item -Path C:\Users\spencer\${registry} -Recurse -Force
-				New-Item -ItemType Junction -Target D:\Users\spencer\${junction} -Path C:\Users\spencer\ -Name $junction
+			if ((Get-Item -Path ${CHome}\${junction} -Force).LinkType -ne "Junction"){
+				Remove-Item -Path ${CHome}\${registry} -Recurse -Force
+				New-Item -ItemType Junction -Target ${DHome}\${junction} -Path ${CHome}\ -Name $junction
 				write-host "Folder Remapped for: ${junction}"
 			} else {
 				write-host "Folder already mapped: ${junction}"
@@ -167,14 +172,14 @@ function New-Puter {
 		Add-Content $PROFILE -Value $powershellConfig
 		write-host "Powershell Profile Cofigured"
 
-		if ( !(Test-Path -Path C:\Users\spencer\.zshrc)){
-			New-Item -Path C:\Users\spencer -Name .zshrc
-			Add-Content -Path C:\Users\spencer\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
+		if ( !(Test-Path -Path ${CHome}\.zshrc)){
+			New-Item -Path ${CHome} -Name .zshrc
+			Add-Content -Path ${CHome}\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
 		}
 
-		if ( !(Test-Path -Path C:\Users\spencer\.bashrc)){
-			New-Item -Path C:\Users\spencer -Name .bashrc
-			Add-Content -Path C:\Users\spencer\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
+		if ( !(Test-Path -Path ${CHome}\.bashrc)){
+			New-Item -Path ${CHome} -Name .bashrc
+			Add-Content -Path ${CHome}\.zshrc -Value (Get-Content -Path C:\code\github\config\.zshrc)
 		}
 	}
 
