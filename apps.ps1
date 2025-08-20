@@ -1,4 +1,4 @@
-$APPS = @( 
+$global:APPS = @(
 		"7zip.7zip",
 		"AgileBits.1Password",
 		"Rufus.Rufus",
@@ -7,13 +7,13 @@ $APPS = @(
 		"hwmonitor",
 		"Mozilla.Firefox",
 		"Nota.Gyazo",
-    "RODE.RODECasterVirtualDeviceDriver",
+		"RODE.RODECasterVirtualDeviceDriver",
 		"XP89DCGQ3K6VLD" #PowerToys
 		)
 
-$DEV= @(
-    "Microsoft.PowerShell",
-    "Microsoft.WindowsTerminal",
+$global:DEV= @(
+		"Microsoft.PowerShell",
+		"Microsoft.WindowsTerminal",
 		"Microsoft.VisualStudioCode",
 		"Oracle.JavaRuntimeEnvironment",
 		"GitHub.cli",
@@ -21,17 +21,17 @@ $DEV= @(
 		"WinSCP.WinSCP",
 		"Notepad++.Notepad++",
 		"Microsoft.DotNet.DesktopRuntime.7",
-    "wez.wezterm",
+		"wez.wezterm",
 		"Git.Git",
-    "Neovim.Neovim"
-)
+		"Neovim.Neovim"
+	      )
 
-$GAME= @(
+$global:GAME= @(
 		"ElectronicArts.EADesktop",
 		"Discord.Discord",
 		"RiotGames.LeagueOfLegends.NA",
 		"Valve.Steam",
 		"TeamSpeakSystems.TeamSpeakClient",
-    "Blizzard.BattleNet",
-    "Blitz.Blitz"
-)
+		"Blizzard.BattleNet",
+		"Blitz.Blitz"
+	       )
