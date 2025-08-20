@@ -75,10 +75,7 @@ function Set-GitConfig {
     if( !(Test-Path -Path C:\code)){
       New-Item -ItemType Directory -Path c:\code
     }
-  if( !(Test-Path -Path C:\code\github)){
-    New-Item -ItemType Directory -Path c:\code\github
-  }
-  Set-Location c:\code\github
+  Set-Location c:\code
     $repoList = gh repo list
     foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
 }
