@@ -23,18 +23,6 @@ install_apps("$@") {
   fi
 }
 
-## Clone Repos from Github
-clone_repos() {
-  mkdir ~/code
-  cd code || exit
-  for repoName in $(gh repo list)
-  do
-    if [[ $repoName = "kimbalsp/"* ]]; then
-      git clone --bare https://github.com/"$repoName"
-    fi
-  done
-}
-
 source macapps.conf
 
 ## Install Apps by Catagory
@@ -59,3 +47,16 @@ config_git() {
   git config --global core.editor code
   echo "git config --global core.editor code"
 }
+
+## Clone Repos from Github
+clone_repos() {
+  mkdir ~/code
+  cd code || exit
+  for repoName in $(gh repo list)
+  do
+    if [[ $repoName = "kimbalsp/"* ]]; then
+      git clone --bare https://github.com/"$repoName"
+    fi
+  done
+}
+
