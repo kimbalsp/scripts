@@ -1,16 +1,23 @@
 #!/bin/bash
 
 ## Install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-echo "brew is installed"
+which -s brew
+if [[ $? != 0 ]]; then
+  # Install Homebrew
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  echo "brew is installed"
+else
+  brew update
+  echo "brew is updated"
+fi
 
 ## Install Apps
-install_apps("$@") {
+function install_apps() {
   local apps=("$@")
   local to_install=()
 
   for app in "${apps[@]}"; do
-    if ! brew list --cask "$app" &>/dev/null; then
+    if ! brew list "$app" &>/dev/null; then
       to_install+=("$app")
     else
       echo "$app is already installed"
@@ -19,7 +26,7 @@ install_apps("$@") {
 
   if [ ${#to_install[@]} -ne 0 ]; then
     echo "All apps are already installed."
-    brew install --cask "${to_install[@]}"
+    brew install "${to_install[@]}"
   fi
 }
 
@@ -50,13 +57,24 @@ config_git() {
 
 ## Clone Repos from Github
 clone_repos() {
-  mkdir ~/code
-  cd code || exit
-  for repoName in $(gh repo list)
-  do
-    if [[ $repoName = "kimbalsp/"* ]]; then
-      git clone --bare https://github.com/"$repoName"
-    fi
+  if [ ! -d ~/code ]; then
+    mkdir ~/code
+  fi
+
+  cd ~/code || exit
+
+  for repoName in $(gh repo list --json name | jq '.[].name'); do
+    short=$(echo $repoName | tr -d '"')
+    echo $short
+    git clone --bare https://github.com/kimbalsp/$short $short
+
+    ## Create worktree for main branch
+    cd $short
+    git worktree add main
+    cd ../
+
   done
 }
 
+config_git
+clone_repos
