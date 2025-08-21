@@ -23,16 +23,6 @@ install_apps("$@") {
   fi
 }
 
-## Git Config
-config_git() {
-  git config --global user.name "kimbalsp"
-  echo "git config --global user.name kimbalsp"
-  git config --global user.email skimball07@gmail.com
-  echo "git config --global user.email skimball07@gmail.com"
-  git config --global core.editor code
-  echo "git config --global core.editor code"
-}
-
 ## Clone Repos from Github
 clone_repos() {
   mkdir ~/code
@@ -59,3 +49,13 @@ install_apps "${TERMINAL_TOOLS[@]}"
 
 echo "Installing Fonts..."
 install_apps "${FONTS[@]}"
+
+## Git Config
+config_git() {
+  git config --global user.name "kimbalsp"
+  echo "git config --global user.name kimbalsp"
+  git config --global user.email skimball07@gmail.com
+  echo "git config --global user.email skimball07@gmail.com"
+  git config --global core.editor code
+  echo "git config --global core.editor code"
+}
