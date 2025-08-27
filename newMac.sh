@@ -63,16 +63,11 @@ clone_repos() {
 
   cd ~/code || exit
 
-  for repoName in $(gh repo list --json name | jq '.[].name'); do
-    short=$(echo $repoName | tr -d '"')
-    echo $short
-    git clone --bare https://github.com/kimbalsp/$short $short
-
-    ## Create worktree for main branch
-    cd $short
+  gh repo list | while read -r repo _; do
+    git clone --bare git@github.com:"$repo".git "$repo"
+    cd $repo
     git worktree add main
-    cd ../
-
+    cd ../../
   done
 }
 
