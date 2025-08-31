@@ -72,12 +72,17 @@ function Set-GitConfig {
     write-host "git config --global core.editor code"
 
 # Clone Repos
-    if( !(Test-Path -Path C:\code)){
-      New-Item -ItemType Directory -Path c:\code
+    if( !(Test-Path -Path ~\code)){
+      New-Item -ItemType Directory -Path ~\code
     }
-  Set-Location c:\code
-    $repoList = gh repo list
-    foreach($repo in $repoList){ gh repo clone $repo.split('')[0] }
+    Set-Location ~\code
+    $repoArray = gh repo list --json name | ConvertFrom-Json
+    foreach($repo in $reposArray.name) {
+      git clone --bare git@github.com:kimbalsp/$repo.git .\kimbalsp\$repo
+      cd D:\home\spencer\code\kimbalsp\$repo
+      git worktree add main
+      cd D:\home\spencer\code\
+    }
 }
 
 # Powershell Config
@@ -100,3 +105,4 @@ function Set-PowershellUser {
 function Install-WSL {
   wsl --install -d Ubuntu-22.04
 }
+
