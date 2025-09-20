@@ -30,21 +30,6 @@ function install_apps() {
   fi
 }
 
-source macapps.conf
-
-## Install Apps by Catagory
-echo "Installing Apps..."
-install_apps "${APPS[@]}"
-
-echo "Installing development tools..."
-install_apps "${DEV_TOOLS[@]}"
-
-echo "Installing Terminal Tools..."
-install_apps "${TERMINAL_TOOLS[@]}"
-
-echo "Installing Fonts..."
-install_apps "${FONTS[@]}"
-
 ## Git Config
 config_git() {
   git config --global user.name "kimbalsp"
@@ -71,5 +56,23 @@ clone_repos() {
   done
 }
 
-config_git
-clone_repos
+source macapps.conf
+
+# ## Install Apps by Catagory
+# echo "Installing Apps..."
+# install_apps "${APPS[@]}"
+#
+# echo "Installing Games..."
+# install_apps "${GAMES[@]}"
+#
+# echo "Installing development tools..."
+# install_apps "${DEV_TOOLS[@]}"
+#
+# echo "Installing Terminal Tools..."
+# install_apps "${TERMINAL_TOOLS[@]}"
+#
+# echo "Installing Fonts..."
+# install_apps "${FONTS[@]}"
+#
+# config_git
+# clone_repos
